@@ -42,5 +42,7 @@ class HttpClient:
         Runs a validation on the response status code and raise exceptions if needed
         """
         if response.status_code != 200:
-            Logger().error(f'Request made to {response.request.url} returned {response.status_code}')
+            Logger().error(
+                f'Request made to {response.request.url} returned {response.status_code}'
+            )
             raise HttpRequestDidNotReturnOk

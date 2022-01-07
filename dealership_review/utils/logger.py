@@ -1,4 +1,4 @@
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring,no-self-use
 
 import logging
 import os
@@ -7,7 +7,7 @@ import os
 def avoid_log_on_test(function):
     def wrapper(*args, **kwargs):
         if os.getenv('ENV') == 'test':
-            return
+            return None
         return function(*args, **kwargs)
     return wrapper
 
