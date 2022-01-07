@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 class TestBeautifulSoupPackage(unittest.TestCase):
     """
-    Tests for the Beautiful Soup package
+    Tests to learn how to use the Beautiful Soup package
     """
 
     def setUp(self) -> None:
