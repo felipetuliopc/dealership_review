@@ -8,4 +8,4 @@ lint:
 	find . -type f -name "*.py" -not -path "./env/*" -not -path "./venv/*" | xargs pylint
 
 test:
-	python -m unittest
+	ENV=test python -m unittest

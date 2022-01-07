@@ -1,5 +1,7 @@
 import requests
 
+from dealership_review.utils.logger import Logger
+
 from dealership_review.exceptions.http_client_exceptions import (
     FailedToDecodeFromJson, HttpRequestDidNotReturnOk
 )
@@ -21,6 +23,7 @@ class HttpClient:
         try:
             return response.json()
         except requests.exceptions.JSONDecodeError as exception:
+            Logger().error(exception)
             raise FailedToDecodeFromJson() from exception
 
     def get_html(self, url: str) -> str:
@@ -39,4 +42,5 @@ class HttpClient:
         Runs a validation on the response status code and raise exceptions if needed
         """
         if response.status_code != 200:
+            Logger().error(f'Request made to {response.request.url} returned {response.status_code}')
             raise HttpRequestDidNotReturnOk
