@@ -8,7 +8,7 @@ for a specific dealership, the [McKaig Chevrolet Buick](https://www.dealerrater.
 
 ## Installation
 
-This app was developed on Python 3.8.10. To install it: https://www.python.org/downloads/release/python-3810/ .
+This app was developed on Python 3.8.10. Follow [those steps to install it](https://www.python.org/downloads/release/python-3810/).
 
 After that, a package manager is needed. `pip` is being used:
 
@@ -40,6 +40,5 @@ make install_requirements
 
 ## License
 
-Dealership Review is released under the MIT License. See the bundled `LICENSE`_ file
-for details.
+Dealership Review is released under the MIT License.
 
