@@ -16,35 +16,35 @@ class TestLogger(unittest.TestCase):
     def setUp(self) -> None:
         os.environ['ENV'] = 'test_logger'
 
-    @patch('logging.debug')
-    def test_debug(self, mocked_debug):
+    @patch('builtins.print')
+    def test_debug(self, mocked_print):
         Logger().debug('debug')
 
-        mocked_debug.assert_called_with('debug')
+        mocked_print.assert_called_with('### DEBUG /// debug')
 
-    @patch('logging.info')
-    def test_info(self, mocked_info):
+    @patch('builtins.print')
+    def test_info(self, mocked_print):
         Logger().info('info')
 
-        mocked_info.assert_called_with('info')
+        mocked_print.assert_called_with('### INFO /// info')
 
-    @patch('logging.warning')
-    def test_warning(self, mocked_warning):
+    @patch('builtins.print')
+    def test_warning(self, mocked_print):
         Logger().warning('warning')
 
-        mocked_warning.assert_called_with('warning')
+        mocked_print.assert_called_with('### WARNING /// warning')
 
-    @patch('logging.error')
-    def test_error(self, mocked_error):
+    @patch('builtins.print')
+    def test_error(self, mocked_print):
         Logger().error('error')
 
-        mocked_error.assert_called_with('error')
+        mocked_print.assert_called_with('### ERROR /// error')
 
-    @patch('logging.critical')
-    def test_critical(self, mocked_critical):
+    @patch('builtins.print')
+    def test_critical(self, mocked_print):
         Logger().critical('critical')
 
-        mocked_critical.assert_called_with('critical')
+        mocked_print.assert_called_with('### CRITICAL /// critical')
 
     def tearDown(self) -> None:
         os.environ['ENV'] = 'test'

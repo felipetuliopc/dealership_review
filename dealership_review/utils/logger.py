@@ -1,6 +1,5 @@
 # pylint: disable=missing-function-docstring,no-self-use
 
-import logging
 import os
 
 
@@ -17,25 +16,22 @@ class Logger:
     Wrapper for a logger class
     """
 
-    def __init__(self):
-        logging.basicConfig(format='### %(levelname)s /// %(message)s')
-
     @avoid_log_on_test
     def debug(self, message):
-        logging.debug(message)
+        print(f'### DEBUG /// {message}')
 
     @avoid_log_on_test
     def info(self, message):
-        logging.info(message)
+        print(f'### INFO /// {message}')
 
     @avoid_log_on_test
     def warning(self, message):
-        logging.warning(message)
+        print(f'### WARNING /// {message}')
 
     @avoid_log_on_test
     def error(self, message):
-        logging.error(message)
+        print(f'### ERROR /// {message}')
 
     @avoid_log_on_test
     def critical(self, message):
-        logging.critical(message)
+        print(f'### CRITICAL /// {message}')
