@@ -40,5 +40,11 @@ class TestBeautifulSoupPackage(unittest.TestCase):
         with self.assertRaises(AttributeError):
             _ = self.soup.marquee.string
 
+    def test_get_child_from_parent(self):
+        parent = self.soup.find('ul')
+        children = parent.find_all('li')
+
+        self.assertEqual(len(children), 3)
+
     def tearDown(self) -> None:
         self.file.close()
