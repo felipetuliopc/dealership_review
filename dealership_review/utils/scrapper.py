@@ -55,6 +55,10 @@ class ScrapperElement(ScrapperSearchable):
         super().__init__(self.element)
 
     def get_value(self) -> str:
+        """
+        Returns the element's value, i.e., if the element is a
+        <p>Banana</p>, the returned value is Banana
+        """
         return self.element.string
 
 
