@@ -71,3 +71,9 @@ class TestScrapperElement(unittest.TestCase):
         scrapper_element = ScrapperElement(element)
 
         self.assertEqual(scrapper_element.get_value(), 'Wow such string')
+
+    def test_get_class(self):
+        element = {'class': ['wow', 'such', 'class']}
+        scrapper_element = ScrapperElement(element)
+
+        self.assertEqual(scrapper_element.get_class(), ['wow', 'such', 'class'])

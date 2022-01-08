@@ -61,6 +61,14 @@ class ScrapperElement(ScrapperSearchable):
         """
         return self.element.string
 
+    def get_class(self) -> list:
+        """
+        Returns all classes from the element in a list of string, i.e,
+        if the element class is class="wow such class", the returned value
+        is ['wow', 'such', 'class']
+        """
+        return self.element['class']
+
 
 class Scrapper(ScrapperSearchable):
     """
