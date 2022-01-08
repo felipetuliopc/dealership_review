@@ -39,8 +39,7 @@ class HttpClient:
 
         return response.text
 
-    @staticmethod
-    def _validate_response_status_code(response: requests.Response):
+    def _validate_response_status_code(self, response: requests.Response):
         """
         Runs a validation on the response status code and raise exceptions if needed
         """
