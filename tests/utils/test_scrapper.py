@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 
 from dealership_review.exceptions.scrapper_exceptions import ElementNotFound
-from dealership_review.utils.scrapper import Scrapper, ScrapperElement, ScrapperSearchable
+from dealership_review.utils.scrapper import Scrapper, ScrapperElement
 
 
 class TestScrapper(unittest.TestCase):
