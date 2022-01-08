@@ -46,5 +46,10 @@ class TestBeautifulSoupPackage(unittest.TestCase):
 
         self.assertEqual(len(children), 3)
 
+    def test_get_class_from_element(self):
+        element = self.soup.find('p', class_='class-such-wow')
+
+        self.assertEqual(element['class'], ['wow-such-another-class', 'class-such-wow'])
+
     def tearDown(self) -> None:
         self.file.close()
