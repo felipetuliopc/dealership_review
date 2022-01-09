@@ -5,7 +5,9 @@ from bs4 import BeautifulSoup, element as beautiful_soup_element
 from dealership_review.exceptions.scrapper_exceptions import ElementNotFound
 
 
-def to_scrapper_element(element: beautiful_soup_element) -> ScrapperElement:
+def to_scrapper_element(  # pylint: disable=missing-function-docstring
+        element: beautiful_soup_element
+) -> ScrapperElement:
     return ScrapperElement(element)
 
 
@@ -30,13 +32,7 @@ class ScrapperSearchable:
         """
         element = self.base_element.find(name, class_=cls, attrs=attrs)
 
-        if not element:
-            raise ElementNotFound()
-
-        if value and value != element.string:
-            raise ElementNotFound()
-
-        return ScrapperElement(element)
+        return self._validate_element(element, value)
 
     def find_all_elements(
             self,
@@ -63,6 +59,36 @@ class ScrapperSearchable:
 
         return list(map(to_scrapper_element, elements))
 
+    def find_next_sibling(
+            self,
+            name: str,
+            cls: str = None,
+            attrs: dict = None,
+            value: str = None,
+    ) -> ScrapperElement:
+        """
+        Finds the first sibling element with the given conditions.
+        If no element is found, ElementNotFound exception is raised.
+        """
+        element = self.base_element.find_next_sibling(name, class_=cls, attrs=attrs)
+
+        return self._validate_element(element, value)
+
+    def find_previous_sibling(
+            self,
+            name: str,
+            cls: str = None,
+            attrs: dict = None,
+            value: str = None,
+    ) -> ScrapperElement:
+        """
+        Finds the first sibling element with the given conditions.
+        If no element is found, ElementNotFound exception is raised.
+        """
+        element = self.base_element.find_previous_sibling(name, class_=cls, attrs=attrs)
+
+        return self._validate_element(element, value)
+
     def count_elements(self, name: str, cls: str = None, attrs: dict = None) -> int:
         """
         Returns the quantity of elements found with the given conditions
@@ -70,6 +96,16 @@ class ScrapperSearchable:
         elements = self.find_all_elements(name, cls, attrs)
 
         return len(elements)
+
+    @staticmethod
+    def _validate_element(element: beautiful_soup_element, value: str = None) -> ScrapperElement:
+        if not element:
+            raise ElementNotFound()
+
+        if value and value != element.string:
+            raise ElementNotFound()
+
+        return ScrapperElement(element)
 
 
 class ScrapperElement(ScrapperSearchable):

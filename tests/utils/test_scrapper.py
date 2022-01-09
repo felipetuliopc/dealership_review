@@ -108,6 +108,110 @@ class TestScrapper(unittest.TestCase):
         self.assertEqual(elements[2].get_value(), 'Element 3')
         mocked_select.assert_called_with('a.class.another-class')
 
+    @patch('bs4.BeautifulSoup.find_next_sibling')
+    def test_find_next_sibling(self, mocked_find_next_sibling):
+        mocked_find_next_sibling.return_value = MagicMock(string='Wow such element')
+
+        element = self.scrapper.find_next_sibling('a', cls='wowsuchclass', attrs={'id': '123'})
+
+        self.assertEqual(element.get_value(), 'Wow such element')
+        mocked_find_next_sibling.assert_called_with('a', class_='wowsuchclass', attrs={'id': '123'})
+
+    @patch('bs4.BeautifulSoup.find_next_sibling')
+    def test_find_next_sibling_matching_value(self, mocked_find_next_sibling):
+        mocked_find_next_sibling.return_value = MagicMock(string='Wow such element')
+
+        element = self.scrapper.find_next_sibling(
+            'a',
+            cls='wowsuchclass',
+            attrs={'id': '123'},
+            value='Wow such element',
+        )
+
+        self.assertEqual(element.get_value(), 'Wow such element')
+        mocked_find_next_sibling.assert_called_with('a', class_='wowsuchclass', attrs={'id': '123'})
+
+    @patch('bs4.BeautifulSoup.find_next_sibling')
+    def test_find_next_sibling_not_found(self, mocked_find_next_sibling):
+        mocked_find_next_sibling.return_value = None
+
+        with self.assertRaises(ElementNotFound):
+            self.scrapper.find_next_sibling('a', cls='wowsuchclass', attrs={'id': '123'})
+        mocked_find_next_sibling.assert_called_with('a', class_='wowsuchclass', attrs={'id': '123'})
+
+    @patch('bs4.BeautifulSoup.find_next_sibling')
+    def test_find_next_sibling_matching_value_not_found(self, mocked_find_next_sibling):
+        mocked_find_next_sibling.return_value = MagicMock(string='Wow such element')
+
+        with self.assertRaises(ElementNotFound):
+            self.scrapper.find_next_sibling(
+                'a',
+                cls='wowsuchclass',
+                attrs={'id': '123'},
+                value='Wow',
+            )
+        mocked_find_next_sibling.assert_called_with('a', class_='wowsuchclass', attrs={'id': '123'})
+
+    @patch('bs4.BeautifulSoup.find_previous_sibling')
+    def test_find_previous_sibling(self, mocked_find_previous_sibling):
+        mocked_find_previous_sibling.return_value = MagicMock(string='Wow such element')
+
+        element = self.scrapper.find_previous_sibling('a', cls='wowsuchclass', attrs={'id': '123'})
+
+        self.assertEqual(element.get_value(), 'Wow such element')
+        mocked_find_previous_sibling.assert_called_with(
+            'a',
+            class_='wowsuchclass',
+            attrs={'id': '123'},
+        )
+
+    @patch('bs4.BeautifulSoup.find_previous_sibling')
+    def test_find_previous_sibling_matching_value(self, mocked_find_previous_sibling):
+        mocked_find_previous_sibling.return_value = MagicMock(string='Wow such element')
+
+        element = self.scrapper.find_previous_sibling(
+            'a',
+            cls='wowsuchclass',
+            attrs={'id': '123'},
+            value='Wow such element',
+        )
+
+        self.assertEqual(element.get_value(), 'Wow such element')
+        mocked_find_previous_sibling.assert_called_with(
+            'a',
+            class_='wowsuchclass',
+            attrs={'id': '123'},
+        )
+
+    @patch('bs4.BeautifulSoup.find_previous_sibling')
+    def test_find_previous_sibling_not_found(self, mocked_find_previous_sibling):
+        mocked_find_previous_sibling.return_value = None
+
+        with self.assertRaises(ElementNotFound):
+            self.scrapper.find_previous_sibling('a', cls='wowsuchclass', attrs={'id': '123'})
+        mocked_find_previous_sibling.assert_called_with(
+            'a',
+            class_='wowsuchclass',
+            attrs={'id': '123'},
+        )
+
+    @patch('bs4.BeautifulSoup.find_previous_sibling')
+    def test_find_previous_sibling_matching_value_not_found(self, mocked_find_previous_sibling):
+        mocked_find_previous_sibling.return_value = MagicMock(string='Wow such element')
+
+        with self.assertRaises(ElementNotFound):
+            self.scrapper.find_previous_sibling(
+                'a',
+                cls='wowsuchclass',
+                attrs={'id': '123'},
+                value='Wow',
+            )
+        mocked_find_previous_sibling.assert_called_with(
+            'a',
+            class_='wowsuchclass',
+            attrs={'id': '123'},
+        )
+
     @patch('bs4.BeautifulSoup.find_all')
     def test_count_elements(self, mocked_find_all):
         mocked_find_all.return_value = [
