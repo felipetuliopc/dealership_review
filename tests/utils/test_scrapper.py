@@ -47,6 +47,21 @@ class TestScrapper(unittest.TestCase):
         self.assertEqual(elements[2].get_value(), 'Element 3')
         mocked_find_all.assert_called_with('a', class_='wowsuchclass', attrs={'id': '123'})
 
+    @patch('bs4.BeautifulSoup.select')
+    def test_select_css(self, mocked_select):
+        mocked_select.return_value = [
+            MagicMock(string='Element 1'),
+            MagicMock(string='Element 2'),
+            MagicMock(string='Element 3'),
+        ]
+
+        elements = self.scrapper.select_css('a.class.another-class')
+
+        self.assertEqual(elements[0].get_value(), 'Element 1')
+        self.assertEqual(elements[1].get_value(), 'Element 2')
+        self.assertEqual(elements[2].get_value(), 'Element 3')
+        mocked_select.assert_called_with('a.class.another-class')
+
     @patch('bs4.BeautifulSoup.find_all')
     def test_count_elements(self, mocked_find_all):
         mocked_find_all.return_value = [

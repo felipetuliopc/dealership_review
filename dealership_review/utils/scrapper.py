@@ -5,6 +5,10 @@ from bs4 import BeautifulSoup, element as beautiful_soup_element
 from dealership_review.exceptions.scrapper_exceptions import ElementNotFound
 
 
+def to_scrapper_element(element: beautiful_soup_element) -> ScrapperElement:
+    return ScrapperElement(element)
+
+
 class ScrapperSearchable:
     """
     Implementation of a searchable object in the scrapper package
@@ -27,13 +31,17 @@ class ScrapperSearchable:
 
     def find_all_elements(self, name: str, cls: str = None, attrs: dict = None) -> list:
         """
-        Finds all element with the given conditions
+        Finds all elements with the given conditions
         """
-
-        def to_scrapper_element(element: beautiful_soup_element) -> ScrapperElement:
-            return ScrapperElement(element)
-
         elements = self.base_element.find_all(name, class_=cls, attrs=attrs)
+
+        return list(map(to_scrapper_element, elements))
+
+    def select_css(self, selector: str) -> list:
+        """
+        Finds all elements matching the given CSS selector
+        """
+        elements = self.base_element.select(selector)
 
         return list(map(to_scrapper_element, elements))
 
