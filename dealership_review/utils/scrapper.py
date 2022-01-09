@@ -98,7 +98,12 @@ class ScrapperSearchable:
         return len(elements)
 
     @staticmethod
-    def _validate_element(element: beautiful_soup_element, name: str, cls: str, value: str = None) -> ScrapperElement:
+    def _validate_element(
+            element: beautiful_soup_element,
+            name: str,
+            cls: str,
+            value: str = None
+    ) -> ScrapperElement:
         if not element:
             raise ElementNotFound(name=name, cls=cls, value=value)
 
