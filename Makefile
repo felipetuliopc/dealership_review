@@ -9,3 +9,6 @@ lint:
 
 test:
 	ENV=test python -m unittest
+
+run:
+	python assessment.py

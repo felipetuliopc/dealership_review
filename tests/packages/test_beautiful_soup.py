@@ -46,5 +46,40 @@ class TestBeautifulSoupPackage(unittest.TestCase):
 
         self.assertEqual(len(children), 3)
 
+    def test_get_class_from_element(self):
+        element = self.soup.find('p', class_='class-such-wow')
+
+        self.assertEqual(element['class'], ['wow-such-another-class', 'class-such-wow'])
+
+    def test_get_class_from_element_via_css(self):
+        elements = self.soup.select('p.class-such-wow.wow-such-another-class')
+
+        self.assertEqual(len(elements), 1)
+        self.assertEqual(elements[0]['class'], ['wow-such-another-class', 'class-such-wow'])
+
+    def test_get_class_from_element_via_css_in_different_order(self):
+        elements = self.soup.select('p.wow-such-another-class.class-such-wow')
+
+        self.assertEqual(len(elements), 1)
+        self.assertEqual(elements[0]['class'], ['wow-such-another-class', 'class-such-wow'])
+
+    def test_get_next_sibling_element(self):
+        element = self.soup.find('p', class_='wow-such-class')
+        next_sibling_element = element.find_next_sibling('p')
+
+        self.assertEqual(next_sibling_element.text, 'dolor sit amet.')
+
+    def test_get_previous_sibling_element(self):
+        element = self.soup.find('p', class_='wow-such-another-class')
+        next_sibling_element = element.find_previous_sibling('p')
+
+        self.assertEqual(next_sibling_element.text, 'Lorem ipsum')
+
+    def test_get_previous_sibling_element_from_first_born(self):
+        element = self.soup.find('p', class_='wow-such-class')
+        next_sibling_element = element.find_previous_sibling('p')
+
+        self.assertEqual(next_sibling_element, None)
+
     def tearDown(self) -> None:
         self.file.close()
