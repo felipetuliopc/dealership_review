@@ -51,5 +51,17 @@ class TestBeautifulSoupPackage(unittest.TestCase):
 
         self.assertEqual(element['class'], ['wow-such-another-class', 'class-such-wow'])
 
+    def test_get_class_from_element_via_css(self):
+        elements = self.soup.select('p.class-such-wow.wow-such-another-class')
+
+        self.assertEqual(len(elements), 1)
+        self.assertEqual(elements[0]['class'], ['wow-such-another-class', 'class-such-wow'])
+
+    def test_get_class_from_element_via_css_in_different_order(self):
+        elements = self.soup.select('p.wow-such-another-class.class-such-wow')
+
+        self.assertEqual(len(elements), 1)
+        self.assertEqual(elements[0]['class'], ['wow-such-another-class', 'class-such-wow'])
+
     def tearDown(self) -> None:
         self.file.close()
