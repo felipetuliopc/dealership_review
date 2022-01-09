@@ -17,7 +17,13 @@ class ScrapperSearchable:
     def __init__(self, base_element):
         self.base_element = base_element
 
-    def find_first_element(self, name: str, cls: str = None, attrs: dict = None) -> ScrapperElement:
+    def find_first_element(
+            self,
+            name: str,
+            cls: str = None,
+            attrs: dict = None,
+            value: str = None,
+    ) -> ScrapperElement:
         """
         Finds the first element with the given conditions.
         If no element is found, ElementNotFound exception is raised.
@@ -27,13 +33,25 @@ class ScrapperSearchable:
         if not element:
             raise ElementNotFound()
 
+        if value and value != element.string:
+            raise ElementNotFound()
+
         return ScrapperElement(element)
 
-    def find_all_elements(self, name: str, cls: str = None, attrs: dict = None) -> list:
+    def find_all_elements(
+            self,
+            name: str,
+            cls: str = None,
+            attrs: dict = None,
+            value: str = None,
+    ) -> list:
         """
         Finds all elements with the given conditions
         """
         elements = self.base_element.find_all(name, class_=cls, attrs=attrs)
+
+        if value:
+            elements = filter(lambda element: element.string == value, elements)
 
         return list(map(to_scrapper_element, elements))
 
