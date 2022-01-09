@@ -32,7 +32,7 @@ class ScrapperSearchable:
         """
         element = self.base_element.find(name, class_=cls, attrs=attrs)
 
-        return self._validate_element(element, value)
+        return self._validate_element(element, name, cls, value)
 
     def find_all_elements(
             self,
@@ -72,7 +72,7 @@ class ScrapperSearchable:
         """
         element = self.base_element.find_next_sibling(name, class_=cls, attrs=attrs)
 
-        return self._validate_element(element, value)
+        return self._validate_element(element, name, cls, value)
 
     def find_previous_sibling(
             self,
@@ -87,7 +87,7 @@ class ScrapperSearchable:
         """
         element = self.base_element.find_previous_sibling(name, class_=cls, attrs=attrs)
 
-        return self._validate_element(element, value)
+        return self._validate_element(element, name, cls, value)
 
     def count_elements(self, name: str, cls: str = None, attrs: dict = None) -> int:
         """
@@ -98,12 +98,12 @@ class ScrapperSearchable:
         return len(elements)
 
     @staticmethod
-    def _validate_element(element: beautiful_soup_element, value: str = None) -> ScrapperElement:
+    def _validate_element(element: beautiful_soup_element, name: str, cls: str, value: str = None) -> ScrapperElement:
         if not element:
-            raise ElementNotFound()
+            raise ElementNotFound(name=name, cls=cls, value=value)
 
         if value and value != element.string:
-            raise ElementNotFound()
+            raise ElementNotFound(name=name, cls=cls, value=value)
 
         return ScrapperElement(element)
 
