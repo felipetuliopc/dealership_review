@@ -81,6 +81,7 @@ class DealerShipReviewScrapper:
             'reviewer': self._get_reviewer_name(online_review),
             'overall-score': self._get_overall_score(online_review),
             'employees-scores': self._get_employees_score(online_review),
+            'message': self._get_message(online_review),
         }
 
         score.update(self._get_specific_scores(online_review))
@@ -104,6 +105,26 @@ class DealerShipReviewScrapper:
         overall_review = elements[0]
 
         return self._get_rating_from_class(overall_review.get_class(), 'rating-')
+
+    def _get_employees_score(self, online_review: ScrapperElement) -> list:
+        scores = []
+        employees_scores_table = online_review.find_first_element('div', cls='employees-wrapper')
+        employees_scores = employees_scores_table.find_all_elements('div', cls='rating-static')
+
+        for employees_score in employees_scores:
+            scores.append(self._get_rating_from_class(employees_score.get_class(), 'rating-'))
+
+        return scores
+
+    @staticmethod
+    def _get_message(online_review: ScrapperElement) -> str:
+        message_root_element = online_review.find_first_element('p', cls='font-16')
+        title_element = message_root_element.find_first_element('span', cls='review-title')
+        whole_message_element = message_root_element.find_first_element('span', cls='review-whole')
+
+        message = f'{title_element.get_value()} {whole_message_element.get_value()}'
+
+        return message
 
     def _get_specific_scores(self, online_review: ScrapperElement) -> dict:
         scores = {'specific-scores': {}}
@@ -134,16 +155,6 @@ class DealerShipReviewScrapper:
                         specific_score_rating_element.get_class(),
                         'rating-'
                     )
-
-        return scores
-
-    def _get_employees_score(self, online_review: ScrapperElement) -> list:
-        scores = []
-        employees_scores_table = online_review.find_first_element('div', cls='employees-wrapper')
-        employees_scores = employees_scores_table.find_all_elements('div', cls='rating-static')
-
-        for employees_score in employees_scores:
-            scores.append(self._get_rating_from_class(employees_score.get_class(), 'rating-'))
 
         return scores
 
