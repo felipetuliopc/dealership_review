@@ -88,11 +88,13 @@ class TestDealerShipReviewScrapper(unittest.TestCase):
 
         self.assertEqual(len(result), 1)
         self.assertEqual(result, [{
-            'name': 'Wow such name',
-            'overall_score': '12',
-            'employees_score': ['34'],
-            'recommend-dealer': 'yes',
-            'pricing': '56'
+            'reviewer': 'Wow such name',
+            'overall-score': 12,
+            'employees-scores': [34],
+            'recommend-dealer': True,
+            'specific-scores': {
+                'pricing': 56,
+            },
         }])
 
     @patch('dealership_review.utils.http_client.HttpClient.get_html')

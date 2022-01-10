@@ -17,6 +17,7 @@ from dealership_review.exceptions.scrapper_exceptions import ElementNotFound
 
 
 RECOMMEND_DEALER_RATING = 'Recommend Dealer'
+RECOMMEND_DEALER_YES_ANSWER = 'yes'
 
 
 class DealerShipReviewScrapper:
@@ -77,9 +78,9 @@ class DealerShipReviewScrapper:
 
     def _get_review_element_from_online_review(self, online_review: ScrapperElement) -> dict:
         score = {
-            'name': self._get_name(online_review),
-            'overall_score': self._get_overall_score(online_review),
-            'employees_score': self._get_employees_score(online_review),
+            'reviewer': self._get_reviewer_name(online_review),
+            'overall-score': self._get_overall_score(online_review),
+            'employees-scores': self._get_employees_score(online_review),
         }
 
         score.update(self._get_specific_scores(online_review))
@@ -87,7 +88,7 @@ class DealerShipReviewScrapper:
         return score
 
     @staticmethod
-    def _get_name(online_review: ScrapperElement) -> str:
+    def _get_reviewer_name(online_review: ScrapperElement) -> str:
         name_element = online_review.find_first_element(
             'span',
             cls='italic font-16 bolder notranslate'
@@ -105,7 +106,7 @@ class DealerShipReviewScrapper:
         return self._get_rating_from_class(overall_review.get_class(), 'rating-')
 
     def _get_specific_scores(self, online_review: ScrapperElement) -> dict:
-        scores = {}
+        scores = {'specific-scores': {}}
         specific_scores_table = online_review.find_first_element('div', cls='review-ratings-all')
         specific_scores = specific_scores_table.find_all_elements('div', cls='tr')
 
@@ -118,18 +119,21 @@ class DealerShipReviewScrapper:
                     'div',
                     cls='boldest',
                 )
-                scores[Slugifier.slugify(specific_score_name)] = Slugifier.slugify(
+                recommend_dealer_score = Slugifier.slugify(
                     specific_score_rating_element.get_value()
                 )
+                scores[Slugifier.slugify(specific_score_name)] = \
+                    recommend_dealer_score == RECOMMEND_DEALER_YES_ANSWER
             else:
                 specific_score_rating_element = specific_score_name_element.find_next_sibling(
                     'div',
                     cls='rating-static-indv',
                 )
-                scores[Slugifier.slugify(specific_score_name)] = self._get_rating_from_class(
-                    specific_score_rating_element.get_class(),
-                    'rating-'
-                )
+                scores['specific-scores'][Slugifier.slugify(specific_score_name)] = \
+                    self._get_rating_from_class(
+                        specific_score_rating_element.get_class(),
+                        'rating-'
+                    )
 
         return scores
 
@@ -160,7 +164,7 @@ class DealerShipReviewScrapper:
         if not rating_match:
             raise UnableToProcessRating()
 
-        return rating_match[0]
+        return int(rating_match[0])
 
     def _log(self, message: str):
         if self.debug_log:
