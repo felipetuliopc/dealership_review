@@ -36,8 +36,20 @@ class TestDealerShipReviewScrapper(unittest.TestCase):
 
         mocked_employees_table_element = MagicMock()
         mocked_employees_table_element.find_all_elements.side_effect = [[
-            mocked_employee_score_element
+            mocked_employee_score_element,
         ]]
+
+        mocked_title_element = MagicMock()
+        mocked_title_element.get_value.side_effect = ['Wow']
+
+        mocked_whole_message_element = MagicMock()
+        mocked_whole_message_element.get_value.side_effect = ['such a whole message']
+
+        mocked_message_root_element = MagicMock()
+        mocked_message_root_element.find_first_element.side_effect = [
+            mocked_title_element,
+            mocked_whole_message_element,
+        ]
 
         mocked_recommend_dealer_score_element = MagicMock()
         mocked_recommend_dealer_score_element.get_value.side_effect = [' Yes ']
@@ -45,12 +57,12 @@ class TestDealerShipReviewScrapper(unittest.TestCase):
         mocked_recommend_dealer_name_element = MagicMock()
         mocked_recommend_dealer_name_element.get_value.side_effect = ['Recommend Dealer']
         mocked_recommend_dealer_name_element.find_next_sibling.side_effect = [
-            mocked_recommend_dealer_score_element
+            mocked_recommend_dealer_score_element,
         ]
 
         mocked_recommend_dealer_root_element = MagicMock()
         mocked_recommend_dealer_root_element.find_first_element.side_effect = [
-            mocked_recommend_dealer_name_element
+            mocked_recommend_dealer_name_element,
         ]
 
         mocked_pricing_score_element = MagicMock()
@@ -73,10 +85,11 @@ class TestDealerShipReviewScrapper(unittest.TestCase):
         mocked_html_scrapper.find_first_element.side_effect = [
             mocked_name_element,
             mocked_employees_table_element,
+            mocked_message_root_element,
             mocked_specific_score_table_element,
         ]
         mocked_html_scrapper.select_css.side_effect = [
-            [mocked_overall_score_element]
+            [mocked_overall_score_element],
         ]
 
         mocked_get_html.return_value = '<html></html>'
@@ -88,11 +101,14 @@ class TestDealerShipReviewScrapper(unittest.TestCase):
 
         self.assertEqual(len(result), 1)
         self.assertEqual(result, [{
-            'name': 'Wow such name',
-            'overall_score': '12',
-            'employees_score': ['34'],
-            'recommend-dealer': 'yes',
-            'pricing': '56'
+            'reviewer': 'Wow such name',
+            'overall-score': 12,
+            'employees-scores': [34],
+            'message': 'Wow such a whole message',
+            'recommend-dealer': True,
+            'specific-scores': {
+                'pricing': 56,
+            },
         }])
 
     @patch('dealership_review.utils.http_client.HttpClient.get_html')
