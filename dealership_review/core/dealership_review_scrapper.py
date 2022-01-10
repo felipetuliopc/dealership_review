@@ -54,8 +54,9 @@ class DealerShipReviewScrapper:
                     self.logger.error('It was not possible to fetch data from DealerRater')
                     return []
             except (ElementNotFound, OverallScoreNotFound, UnableToProcessRating) as exception:
-                self.logger.error(str(exception))
-                return []
+                if not scrapped_reviews:
+                    self.logger.error(str(exception))
+                    return []
 
         self._log('Finished scrapping reviews')
 
