@@ -73,9 +73,19 @@ make install_requirements
 
 ## Usage
 
+To execute the assessment, just run:
+
+```
+make run
+```
+
+> It is possible to tweak the assessment by editing the `assessment.py` file.
+> I planned to pass `make` arguments to the file, but it would take more time
+> than I expected :cry: .
+
 ## Tests
 
-To run tests, simply:
+To run the test suite, simply:
 
 ```
 make test
@@ -84,4 +94,3 @@ make test
 ## License
 
 Dealership Review is released under the MIT License.
-
