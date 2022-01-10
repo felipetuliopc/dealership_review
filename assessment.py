@@ -1,4 +1,8 @@
-from dealership_review.core.reviewer import Reviewer
+from dealership_review.core.mediator import Mediator
 
+reviews = Mediator().get_scores()
 
-Reviewer().get_review(debug_log=True)
+print('###')
+for review in reviews:
+    print(review)
+print('###')
