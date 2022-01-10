@@ -69,57 +69,63 @@ class DealerShipReviewScrapper:
 
         scrapper = Scrapper(html)
 
-        online_reviews = scrapper.find_all_elements('div', cls='review-entry')
+        raw_reviews = scrapper.find_all_elements('div', cls='review-entry')
 
         self._log(f'Scrapping reviews on page {page_number}')
 
-        reviews = list(map(self._get_review_element_from_online_review, online_reviews))
+        reviews = list(map(self._get_processed_review_from_raw_review, raw_reviews))
 
         return reviews
 
-    def _get_review_element_from_online_review(self, online_review: ScrapperElement) -> dict:
-        score = {
-            'reviewer': self._get_reviewer_name(online_review),
-            'overall-score': self._get_overall_score(online_review),
-            'employees-scores': self._get_employees_score(online_review),
-            'message': self._get_message(online_review),
+    def _get_processed_review_from_raw_review(self, raw_review: ScrapperElement) -> dict:
+        review = {
+            'reviewer': self._get_reviewer_name(raw_review),
+            'overall-score': self._get_overall_score(raw_review),
+            'employees-scores': self._get_employees_score(raw_review),
+            'message': self._get_message(raw_review),
         }
 
-        score.update(self._get_specific_scores(online_review))
+        review.update(self._get_specific_scores(raw_review))
 
-        return score
+        return review
 
     @staticmethod
-    def _get_reviewer_name(online_review: ScrapperElement) -> str:
-        name_element = online_review.find_first_element(
+    def _get_reviewer_name(raw_review: ScrapperElement) -> str:
+        name_element = raw_review.find_first_element(
             'span',
             cls='italic font-16 bolder notranslate'
         )
         return name_element.get_value()[3:]
 
-    def _get_overall_score(self, online_review: ScrapperElement) -> int:
-        elements = online_review.select_css('div.rating-static.hidden-xs')
+    def _get_overall_score(self, raw_review: ScrapperElement) -> int:
+        overall_score_elements = raw_review.select_css('div.rating-static.hidden-xs')
 
-        if not elements:
+        if not overall_score_elements:
             raise OverallScoreNotFound()
 
-        overall_review = elements[0]
+        overall_score_element = overall_score_elements[0]
 
-        return self._get_rating_from_class(overall_review.get_class(), 'rating-')
+        return self._get_score_from_element_class(overall_score_element.get_class(), 'rating-')
 
-    def _get_employees_score(self, online_review: ScrapperElement) -> list:
+    def _get_employees_score(self, raw_review: ScrapperElement) -> list:
         scores = []
-        employees_scores_table = online_review.find_first_element('div', cls='employees-wrapper')
-        employees_scores = employees_scores_table.find_all_elements('div', cls='rating-static')
+        employees_scores_table = raw_review.find_first_element('div', cls='employees-wrapper')
+        employees_score_elements = employees_scores_table.find_all_elements(
+            'div',
+            cls='rating-static'
+        )
 
-        for employees_score in employees_scores:
-            scores.append(self._get_rating_from_class(employees_score.get_class(), 'rating-'))
+        for employees_score_element in employees_score_elements:
+            scores.append(self._get_score_from_element_class(
+                employees_score_element.get_class(),
+                'rating-'
+            ))
 
         return scores
 
     @staticmethod
-    def _get_message(online_review: ScrapperElement) -> str:
-        message_root_element = online_review.find_first_element('p', cls='font-16')
+    def _get_message(raw_review: ScrapperElement) -> str:
+        message_root_element = raw_review.find_first_element('p', cls='font-16')
         title_element = message_root_element.find_first_element('span', cls='review-title')
         whole_message_element = message_root_element.find_first_element('span', cls='review-whole')
 
@@ -127,13 +133,16 @@ class DealerShipReviewScrapper:
 
         return message
 
-    def _get_specific_scores(self, online_review: ScrapperElement) -> dict:
+    def _get_specific_scores(self, raw_review: ScrapperElement) -> dict:
         scores = {'specific-scores': {}}
-        specific_scores_table = online_review.find_first_element('div', cls='review-ratings-all')
-        specific_scores = specific_scores_table.find_all_elements('div', cls='tr')
+        specific_scores_table_element = raw_review.find_first_element(
+            'div',
+            cls='review-ratings-all'
+        )
+        specific_scores_element = specific_scores_table_element.find_all_elements('div', cls='tr')
 
-        for specific_score in specific_scores:
-            specific_score_name_element = specific_score.find_first_element('div', cls='td')
+        for specific_score_element in specific_scores_element:
+            specific_score_name_element = specific_score_element.find_first_element('div', cls='td')
             specific_score_name = specific_score_name_element.get_value()
 
             if specific_score_name == RECOMMEND_DEALER_RATING:
@@ -152,7 +161,7 @@ class DealerShipReviewScrapper:
                     cls='rating-static-indv',
                 )
                 scores['specific-scores'][Slugifier.slugify(specific_score_name)] = \
-                    self._get_rating_from_class(
+                    self._get_score_from_element_class(
                         specific_score_rating_element.get_class(),
                         'rating-'
                     )
@@ -160,7 +169,7 @@ class DealerShipReviewScrapper:
         return scores
 
     @staticmethod
-    def _get_rating_from_class(cls: list, matching_score_string: str) -> int:
+    def _get_score_from_element_class(cls: list, matching_score_string: str) -> int:
         rating_class_match = list(filter(
             lambda a: re.match(rf'\W*{matching_score_string}\D*(\d+)', a),
             cls
