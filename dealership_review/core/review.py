@@ -3,6 +3,10 @@
 import math
 import re
 
+MODIFIER_WORDS = [
+    'not',
+    'wasnt',
+]
 POSITIVE_WORDS = [
     'good',
     'helpful',
@@ -102,8 +106,18 @@ class Review:
         lowercase_message_without_punctuation = re.sub(r'[^\w\s]', '', lowercase_message)
         words = lowercase_message_without_punctuation.split()
 
-        score += min(len(set(POSITIVE_WORDS) & set(words)), 10)
-        score -= min(len(set(NEGATIVE_WORDS) & set(words)), 10)
+        for index, _ in enumerate(words):
+            if words[index] in POSITIVE_WORDS:
+                if (words[index - 1] in MODIFIER_WORDS) and index != 0:
+                    score -= 1
+                else:
+                    score += 1
+
+            if words[index] in NEGATIVE_WORDS:
+                if (words[index - 1] in MODIFIER_WORDS) and index != 0:
+                    score += 1
+                else:
+                    score -= 1
 
         return score
 
